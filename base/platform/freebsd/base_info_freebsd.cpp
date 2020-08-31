@@ -12,8 +12,6 @@
 #include <QtCore/QProcess>
 #include <QtCore/QVersionNumber>
 #include <QtCore/QDate>
-#include <QtGui/QGuiApplication>
-#include <gnu/libc-version.h>
 
 namespace Platform {
 namespace {
@@ -56,25 +54,18 @@ void FallbackFontConfig(
 } // namespace
 
 QString DeviceModelPretty() {
-	const auto cpuArch = QSysInfo::buildCpuArchitecture();
-
-	if (cpuArch == qstr("x86_64")) {
-		return "PC 64bit";
-	} else if (cpuArch == qstr("i386")) {
-		return "PC 32bit";
-	}
-
-	return "PC " + cpuArch;
+#ifdef Q_OS_LINUX64
+	return "PC 64bit";
+#else // Q_OS_LINUX64
+	return "PC 32bit";
+#endif // Q_OS_LINUX64
 }
 
 QString SystemVersionPretty() {
 	const auto result = getenv("XDG_CURRENT_DESKTOP");
 	const auto value = result ? QString::fromLatin1(result) : QString();
 	const auto list = value.split(':', QString::SkipEmptyParts);
-
-	return "FreeBSD "
-		+ (list.isEmpty() ? QString() : list[0] + ' ')
-		+ (IsWayland() ? "Wayland " : "X11 ");
+	return list.isEmpty() ? "Linux" : "Linux " + list[0];
 }
 
 QString SystemCountry() {
@@ -90,18 +81,7 @@ QString SystemLanguage() {
 }
 
 QDate WhenSystemBecomesOutdated() {
-	if (IsLinux32Bit()) {
-		return QDate(2020, 9, 1);
-	} else if (const auto version = GetGlibCVersion(); !version.isEmpty()) {
-		if (QVersionNumber::fromString(version) < QVersionNumber(2, 23)) {
-			return QDate(2020, 9, 1); // Older than Ubuntu 16.04.
-		}
-	}
 	return QDate();
-}
-
-OutdateReason WhySystemBecomesOutdated() {
-	return IsLinux32Bit() ? OutdateReason::Is32Bit : OutdateReason::IsOld;
 }
 
 int AutoUpdateVersion() {
@@ -116,18 +96,6 @@ QString AutoUpdateKey() {
 	} else {
 		Unexpected("Platform in AutoUpdateKey.");
 	}
-}
-
-QString GetGlibCVersion() {
-	static const auto result = [&] {
-		const auto version = QString::fromLatin1(gnu_get_libc_version());
-		return QVersionNumber::fromString(version).isNull() ? QString() : version;
-	}();
-	return result;
-}
-
-bool IsWayland() {
-	return QGuiApplication::platformName().startsWith("wayland", Qt::CaseInsensitive);
 }
 
 void Start(QJsonObject options) {
