@@ -98,7 +98,7 @@ QString SystemVersionPretty() {
 	static const auto result = [&] {
 		QStringList resultList{};
 
-#ifdef 0
+#if 0
 		resultList << "Linux";
 #else // Q_OS_LINUX
 		resultList << QSysInfo::kernelType();
@@ -181,7 +181,7 @@ QString AutoUpdateKey() {
 }
 
 QString GetLibcName() {
-#ifdef 0
+#if 0
 	return "glibc";
 #endif // Q_OS_LINUX
 
@@ -189,7 +189,7 @@ QString GetLibcName() {
 }
 
 QString GetLibcVersion() {
-#ifdef 0
+#if 0
 	static const auto result = [&] {
 		const auto version = QString::fromLatin1(gnu_get_libc_version());
 		return QVersionNumber::fromString(version).isNull() ? QString() : version;
