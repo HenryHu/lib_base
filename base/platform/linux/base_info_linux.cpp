@@ -95,19 +95,10 @@ QString DeviceModelPretty() {
 }
 
 QString SystemVersionPretty() {
-<<<<<<< HEAD
-	const auto result = getenv("XDG_CURRENT_DESKTOP");
-	const auto value = result ? QString::fromLatin1(result) : QString();
-	const auto list = value.split(':', QString::SkipEmptyParts);
-
-	return "FreeBSD "
-		+ (list.isEmpty() ? QString() : list[0] + ' ')
-		+ (IsWayland() ? "Wayland " : "X11 ");
-=======
 	static const auto result = [&] {
 		QStringList resultList{};
 
-#ifdef Q_OS_LINUX
+#ifdef 0
 		resultList << "Linux";
 #else // Q_OS_LINUX
 		resultList << QSysInfo::kernelType();
@@ -142,7 +133,6 @@ QString SystemVersionPretty() {
 	}();
 
 	return result;
->>>>>>> 2bf29ab1a5458003c8ed250886e08c61cce5ff72
 }
 
 QString SystemCountry() {
@@ -163,13 +153,10 @@ QDate WhenSystemBecomesOutdated() {
 
 	if (IsLinux32Bit()) {
 		return QDate(2020, 9, 1);
-<<<<<<< HEAD
-=======
 	} else if (libcName == qstr("glibc") && !libcVersion.isEmpty()) {
 		if (QVersionNumber::fromString(libcVersion) < QVersionNumber(2, 23)) {
 			return QDate(2020, 9, 1); // Older than Ubuntu 16.04.
 		}
->>>>>>> 2bf29ab1a5458003c8ed250886e08c61cce5ff72
 	}
 
 	return QDate();
@@ -193,10 +180,8 @@ QString AutoUpdateKey() {
 	}
 }
 
-<<<<<<< HEAD
-=======
 QString GetLibcName() {
-#ifdef Q_OS_LINUX
+#ifdef 0
 	return "glibc";
 #endif // Q_OS_LINUX
 
@@ -204,7 +189,7 @@ QString GetLibcName() {
 }
 
 QString GetLibcVersion() {
-#ifdef Q_OS_LINUX
+#ifdef 0
 	static const auto result = [&] {
 		const auto version = QString::fromLatin1(gnu_get_libc_version());
 		return QVersionNumber::fromString(version).isNull() ? QString() : version;
@@ -215,7 +200,6 @@ QString GetLibcVersion() {
 	return QString();
 }
 
->>>>>>> 2bf29ab1a5458003c8ed250886e08c61cce5ff72
 bool IsWayland() {
 	return QGuiApplication::instance()
 		? QGuiApplication::platformName().startsWith(
