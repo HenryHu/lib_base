@@ -4,6 +4,6 @@
 // For license and copyright information please follow this link:
 // https://github.com/desktop-app/legal/blob/master/LEGAL
 //
-#include "base/base_pch.h"
+#pragma once
 
-// Precompiled header helper.
+#include "base/global_shortcuts.h"
