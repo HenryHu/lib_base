@@ -124,7 +124,7 @@ QString SystemVersionPretty() {
 
 		if (IsWayland()) {
 			resultList << "Wayland";
-		} else if (QGuiApplication::platformName() == "xcb") {
+		} else if (IsX11()) {
 			resultList << "X11";
 		}
 
@@ -208,6 +208,12 @@ QString GetLibcVersion() {
 #endif // Q_OS_LINUX
 
 	return QString();
+}
+
+bool IsX11() {
+	return QGuiApplication::instance()
+		? QGuiApplication::platformName() == "xcb"
+		: qEnvironmentVariableIsSet("DISPLAY");
 }
 
 bool IsWayland() {
