@@ -27,14 +27,22 @@ PRIVATE
     base/platform/linux/base_last_input_linux.h
     base/platform/linux/base_layout_switch_linux.cpp
     base/platform/linux/base_layout_switch_linux.h
-    base/platform/linux/base_linux_glib_helper.h
+    base/platform/linux/base_linux_dbus_utilities.cpp
+    base/platform/linux/base_linux_dbus_utilities.h
+    base/platform/linux/base_linux_glibmm_helper.h
     base/platform/linux/base_linux_gtk_integration_p.h
     base/platform/linux/base_linux_gtk_integration.cpp
     base/platform/linux/base_linux_gtk_integration.h
+    base/platform/linux/base_linux_library.cpp
+    base/platform/linux/base_linux_library.h
     base/platform/linux/base_linux_xcb_utilities.cpp
     base/platform/linux/base_linux_xcb_utilities.h
+    base/platform/linux/base_linux_xdp_utilities.cpp
+    base/platform/linux/base_linux_xdp_utilities.h
     base/platform/linux/base_linux_xlib_helper.cpp
     base/platform/linux/base_linux_xlib_helper.h
+    base/platform/linux/base_network_reachability_linux.cpp
+    base/platform/linux/base_network_reachability_linux.h
     base/platform/linux/base_process_linux.cpp
     base/platform/linux/base_process_linux.h
     base/platform/linux/base_url_scheme_linux.cpp
@@ -49,6 +57,7 @@ PRIVATE
     base/platform/mac/base_last_input_mac.mm
     base/platform/mac/base_layout_switch_mac.h
     base/platform/mac/base_layout_switch_mac.mm
+    base/platform/mac/base_network_reachability_mac.h
     base/platform/mac/base_process_mac.h
     base/platform/mac/base_process_mac.mm
     base/platform/mac/base_url_scheme_mac.h
@@ -65,6 +74,7 @@ PRIVATE
     base/platform/win/base_last_input_win.h
     base/platform/win/base_layout_switch_win.cpp
     base/platform/win/base_layout_switch_win.h
+    base/platform/win/base_network_reachability_win.h
     base/platform/win/base_process_win.cpp
     base/platform/win/base_process_win.h
     base/platform/win/base_url_scheme_win.cpp
@@ -79,6 +89,8 @@ PRIVATE
     base/platform/base_platform_info.h
     base/platform/base_platform_last_input.h
     base/platform/base_platform_layout_switch.h
+    base/platform/base_platform_network_reachability.cpp
+    base/platform/base_platform_network_reachability.h
     base/platform/base_platform_file_utilities.h
     base/platform/base_platform_process.h
     base/platform/base_platform_url_scheme.h
@@ -98,6 +110,8 @@ PRIVATE
     base/concurrent_timer.cpp
     base/concurrent_timer.h
     base/const_string.h
+    base/debug_log.cpp
+    base/debug_log.h
     base/enum_mask.h
     base/event_filter.cpp
     base/event_filter.h
@@ -120,6 +134,8 @@ PRIVATE
     base/last_user_input.cpp
     base/last_user_input.h
     base/match_method.h
+    base/network_reachability.cpp
+    base/network_reachability.h
     base/object_ptr.h
     base/observer.cpp
     base/observer.h
@@ -157,6 +173,15 @@ PRIVATE
 
     base/base_pch.h
 )
+
+if (DESKTOP_APP_DISABLE_DBUS_INTEGRATION)
+    remove_target_sources(lib_base ${src_loc}
+        base/platform/linux/base_linux_dbus_utilities.cpp
+        base/platform/linux/base_linux_dbus_utilities.h
+        base/platform/linux/base_linux_xdp_utilities.cpp
+        base/platform/linux/base_linux_xdp_utilities.h
+    )
+endif()
 
 if (DESKTOP_APP_DISABLE_X11_INTEGRATION)
     remove_target_sources(lib_base ${src_loc}
@@ -201,6 +226,7 @@ PUBLIC
 if (LINUX)
     target_link_libraries(lib_base
     PUBLIC
+        desktop-app::external_glibmm
         desktop-app::external_glib
     )
 
@@ -235,6 +261,8 @@ if (LINUX)
         endif()
     endif()
 endif()
+
+target_compile_definitions(lib_base PRIVATE G_LOG_DOMAIN="lib_base")
 
 #target_precompile_headers(lib_base_crash_report_writer REUSE_FROM lib_base)
 target_precompile_headers(lib_base_crash_report_writer PRIVATE ${src_loc}/base/base_pch.h)
